@@ -24,3 +24,5 @@ logs
 build
 
 src/seed.json
+
+Makefile

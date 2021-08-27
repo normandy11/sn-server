@@ -1,17 +1,23 @@
-FROM node
-
-ENV NODE_ENV production
+FROM node:16-alpine3.11 as build
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
-RUN npm install
+RUN yarn
 
-COPY . .
+COPY . ./
 
-EXPOSE 8080
+RUN yarn build
 
-RUN npm run build
+FROM node:16-alpine3.11
 
-CMD [ "npm", "start" ]
+WORKDIR /usr/src/app
+
+COPY --from=build /usr/src/app/build ./build
+
+COPY package.json yarn.lock ./
+
+RUN yarn install --production
+
+CMD [ "yarn", "start" ]
